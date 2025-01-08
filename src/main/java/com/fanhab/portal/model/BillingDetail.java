@@ -15,6 +15,9 @@ import lombok.ToString;
 public class BillingDetail extends BaseDomain {
 
 
+
+
+    
     @Column(name = "BILLING_ID")
     Long billingId;
 
