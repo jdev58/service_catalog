@@ -14,7 +14,7 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @RequiredArgsConstructor
 @Entity
-@Table(name = "prt_contract_api")
+@Table(name = "prt_contract_detail_api")
 public class ContractDetailAPI extends BaseDomain {
     @Column(name = "CONTRACT_ID")
     Long contractId;
@@ -22,7 +22,7 @@ public class ContractDetailAPI extends BaseDomain {
     @ManyToOne(fetch= FetchType.EAGER)
     @JoinColumn(name = "CONTRACT_ID", referencedColumnName = "ID",
             insertable = false, updatable = false,
-            foreignKey = @ForeignKey(name = "FK_CONTRACT_API"))
+            foreignKey = @ForeignKey(name = "FK_CONTRACTDETAIL_CONTRACT"))
     Contract contract;
 
 
@@ -33,7 +33,7 @@ public class ContractDetailAPI extends BaseDomain {
     @ManyToOne(fetch= FetchType.EAGER)
     @JoinColumn(name = "API_ID", referencedColumnName = "ID",
             insertable = false, updatable = false,
-            foreignKey = @ForeignKey(name = "FK_CONTRACT_API"))
+            foreignKey = @ForeignKey(name = "FK_CONTRACTDETAIL_API"))
     ApiCatalog apiCatalog;
 
 

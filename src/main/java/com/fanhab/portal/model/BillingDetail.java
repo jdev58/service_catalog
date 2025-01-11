@@ -15,9 +15,6 @@ import lombok.ToString;
 public class BillingDetail extends BaseDomain {
 
 
-
-
-    
     @Column(name = "BILLING_ID")
     Long billingId;
 
@@ -34,11 +31,11 @@ public class BillingDetail extends BaseDomain {
     @ManyToOne(fetch= FetchType.EAGER)
     @JoinColumn(name = "API_CALL_ID", referencedColumnName = "ID",
             insertable = false, updatable = false,
-            foreignKey = @ForeignKey(name = "FK_BILL_APICALL"))
-    TotalApiCALL totalApiCALL;
+            foreignKey = @ForeignKey(name = "FK_BILL_API_CALL"))
+    TotalApiCall totalApiCALL;
 
 
-    @Column(name = "BILL_DISCOUNT")
-    Long Discount;
+
+
 
 }

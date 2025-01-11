@@ -1,4 +1,5 @@
 package com.fanhab.portal.dto.enums;
 
-public class ApiCategoryEnum {
+public enum ApiCategoryEnum {
+    VEHICLE, HEALTH, BUILDING
 }

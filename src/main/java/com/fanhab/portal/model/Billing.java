@@ -1,8 +1,7 @@
 package com.fanhab.portal.model;
 
 
-import com.fanhab.portal.dto.enums.ApiStatusEnum;
-import com.fanhab.portal.dto.enums.ProcessStatusEnum;
+import com.fanhab.portal.dto.enums.BillStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -50,6 +49,15 @@ public class Billing extends BaseDomain {
 
 
 
+
+    @Column(name = "BILL_DISCOUNT")
+    Long Discount;
+
+
+
+
+    @Column(name = "BILL_STATUS", nullable = false)
+    private BillStatus billStatus;
 
 
 
