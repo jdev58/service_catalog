@@ -25,7 +25,7 @@ public class ApiCatalog extends BaseDomain{
     private String apiName;
 
     @Column(name = "API_DESCR", nullable = false)
-    private String api_Descr;
+    private String apiDescr;
 
     @Column(name = "API_VERSION", nullable = false)
     private String apiVersion;
