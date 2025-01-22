@@ -34,6 +34,9 @@ public class BillingDetail extends BaseDomain {
             foreignKey = @ForeignKey(name = "FK_BILL_API_CALL"))
     TotalApiCall totalApiCALL;
 
+    @Column(name = "API_TOTAL_AMOUNT")
+    Double apiTotalAmount;
+
 
 
 

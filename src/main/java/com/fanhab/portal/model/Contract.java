@@ -28,6 +28,7 @@ public class Contract extends BaseDomain {
 
 
     @Column(name = "CONTRACT_STATUS", nullable = false)
+    @Enumerated(EnumType.STRING)
     private StatusEnum contractStatus;
 
 }

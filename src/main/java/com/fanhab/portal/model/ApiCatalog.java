@@ -32,6 +32,7 @@ public class ApiCatalog extends BaseDomain{
 
 
     @Column(name = "API_PROVIDER", nullable = false)
+    @Enumerated(EnumType.STRING)
     private ProviderEnum provider;
 
 

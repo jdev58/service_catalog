@@ -17,5 +17,5 @@ import lombok.ToString;
 @Table(name = "prt_company")
 public class Company extends BaseDomain {
     @Column(name = "COMPANY_NAME")
-    Long companyName;
+    String companyName;
 }

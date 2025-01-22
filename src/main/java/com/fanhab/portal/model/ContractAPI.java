@@ -45,6 +45,7 @@ public class ContractAPI extends BaseDomain {
 
 
     @Column(name = "API_STATUS", nullable = false)
+    @Enumerated(EnumType.STRING)
     private StatusEnum statusEnum;
 
 

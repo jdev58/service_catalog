@@ -53,10 +53,14 @@ public class Billing extends BaseDomain {
     @Column(name = "BILL_DISCOUNT")
     Long Discount;
 
+    @Column(name = "TOTAL_AMOUNT")
+    Double totalAmount;
+
 
 
 
     @Column(name = "BILL_STATUS", nullable = false)
+    @Enumerated(EnumType.STRING)
     private BillStatus billStatus;
 
 

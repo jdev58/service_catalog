@@ -43,12 +43,15 @@ public class TotalApiCall extends BaseDomain {
     Integer totalApiCallCount;
 
     @Column(name = "API_STATUS")
+    @Enumerated(EnumType.STRING)
     ApiStatusEnum apiStatus;
 
     @Column(name = "PROCESS_STATE")
+    @Enumerated(EnumType.STRING)
     ProcessStatusEnum processState;
 
     @Column(name = "COUNT_SOURCE")
+    @Enumerated(EnumType.STRING)
     ApiCountSourceEnum apiCountSource;
 
 
