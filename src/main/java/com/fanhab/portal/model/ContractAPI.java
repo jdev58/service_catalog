@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @ToString(callSuper = true)
 @RequiredArgsConstructor
 @Entity
-@Table(name = "prt_contract_api")
+@Table(name = "svc_contract_api")
 public class ContractAPI extends BaseDomain {
     @Column(name = "CONTRACT_ID")
     Long contractId;

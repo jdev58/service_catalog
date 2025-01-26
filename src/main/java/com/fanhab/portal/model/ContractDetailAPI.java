@@ -14,7 +14,7 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @RequiredArgsConstructor
 @Entity
-@Table(name = "prt_contract_detail_api")
+@Table(name = "svc_contract_detail_api")
 public class ContractDetailAPI extends BaseDomain {
     @Column(name = "CONTRACT_ID")
     Long contractId;

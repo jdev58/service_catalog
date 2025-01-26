@@ -1,6 +1,7 @@
 package com.fanhab.portal.controller;
 
 import com.fanhab.portal.dto.enums.ProcessStatusEnum;
+import com.fanhab.portal.dto.request.CreateBillingDto;
 import com.fanhab.portal.model.TotalApiCall;
 import com.fanhab.portal.repository.TotalApiCallRepository;
 import com.fanhab.portal.service.BillingService;
@@ -22,8 +23,8 @@ public class BillingRestEndPoint {
 //        return new ResponseEntity<>(aa, HttpStatus.OK);
 //    }
     @PostMapping
-    public ResponseEntity save(){
-        billingService.createBillingAndDetailsForNotCalculatedApiCalls();
+    public ResponseEntity save(@RequestBody CreateBillingDto createBillingDto){
+        billingService.createBillingAndDetailsForNotCalculatedApiCalls(createBillingDto);
         return ResponseEntity.ok("ok");
     }
 }

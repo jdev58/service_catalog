@@ -10,13 +10,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 
 @Getter
 @Setter
 @ToString(callSuper = true)
 @RequiredArgsConstructor
 @Entity
-@Table(name = "prt_total_api_call")
+@Table(name = "svc_total_api_call")
 public class TotalApiCall extends BaseDomain {
     @Column(name = "CONTRACT_ID")
     Long contractId;
@@ -24,7 +27,7 @@ public class TotalApiCall extends BaseDomain {
     @ManyToOne(fetch= FetchType.EAGER)
     @JoinColumn(name = "CONTRACT_ID", referencedColumnName = "ID",
             insertable = false, updatable = false,
-            foreignKey = @ForeignKey(name = "FK_CONTRACT_API"))
+            foreignKey = @ForeignKey(name = "FK_TOTALAPI_CONTRACT"))
     Contract contract;
 
 
@@ -35,7 +38,7 @@ public class TotalApiCall extends BaseDomain {
     @ManyToOne(fetch= FetchType.EAGER)
     @JoinColumn(name = "API_ID", referencedColumnName = "ID",
             insertable = false, updatable = false,
-            foreignKey = @ForeignKey(name = "FK_CONTRACT_API"))
+            foreignKey = @ForeignKey(name = "FK_TOTALAPI_API"))
     ApiCatalog apiCatalog;
 
 
@@ -54,7 +57,8 @@ public class TotalApiCall extends BaseDomain {
     @Enumerated(EnumType.STRING)
     ApiCountSourceEnum apiCountSource;
 
-
+    @Column(name = "TOTAL_API_CALL_DATE")
+    LocalDate totalApiCallDate;
 
 
 

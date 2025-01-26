@@ -14,7 +14,7 @@ import lombok.ToString;
 @RequiredArgsConstructor
 @Entity
 
-@Table(name = "prt_company")
+@Table(name = "svc_company")
 public class Company extends BaseDomain {
     @Column(name = "COMPANY_NAME")
     String companyName;

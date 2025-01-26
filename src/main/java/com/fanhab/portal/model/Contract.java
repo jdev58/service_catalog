@@ -14,7 +14,7 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @RequiredArgsConstructor
 @Entity
-@Table(name = "prt_contract")
+@Table(name = "svc_contract")
 public class Contract extends BaseDomain {
     @Column(name = "COMPANY_ID")
     Long companyId;

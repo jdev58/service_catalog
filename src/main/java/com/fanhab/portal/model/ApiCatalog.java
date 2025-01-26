@@ -14,7 +14,7 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @RequiredArgsConstructor
 @Entity
-@Table(name = "prt_api_catalog", indexes = {
+@Table(name = "svc_api_catalog", indexes = {
         @Index(unique = true, name = "IDX_PRT_API_CODE", columnList = "API_CODE")
 })
 public class ApiCatalog extends BaseDomain{

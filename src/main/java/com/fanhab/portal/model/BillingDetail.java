@@ -11,7 +11,7 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @RequiredArgsConstructor
 @Entity
-@Table(name = "prt_billing_detail")
+@Table(name = "svc_billing_detail")
 public class BillingDetail extends BaseDomain {
 
 
