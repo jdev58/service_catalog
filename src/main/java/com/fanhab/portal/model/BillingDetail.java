@@ -1,5 +1,6 @@
 package com.fanhab.portal.model;
 
+import com.fanhab.portal.dto.enums.ApiStatusEnum;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -25,20 +26,28 @@ public class BillingDetail extends BaseDomain {
     Billing billing;
 
 
-    @Column(name = "API_CALL_ID")
-    Long apiCall;
+//    @Column(name = "API_CALL_ID")
+//    Long apiCall;
+//
+//    @ManyToOne(fetch= FetchType.EAGER)
+//    @JoinColumn(name = "API_CALL_ID", referencedColumnName = "ID",
+//            insertable = false, updatable = false,
+//            foreignKey = @ForeignKey(name = "FK_BILL_API_CALL"))
+//    TotalApiCall totalApiCALL;
 
-    @ManyToOne(fetch= FetchType.EAGER)
-    @JoinColumn(name = "API_CALL_ID", referencedColumnName = "ID",
+    @Column(name = "API_ID")
+    Long apiId;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "API_ID", referencedColumnName = "ID",
             insertable = false, updatable = false,
-            foreignKey = @ForeignKey(name = "FK_BILL_API_CALL"))
-    TotalApiCall totalApiCALL;
+            foreignKey = @ForeignKey(name = "FK_BILL_DETAIL_API"))
+    Api api;
 
     @Column(name = "API_TOTAL_AMOUNT")
     Double apiTotalAmount;
 
-
-
-
-
+    @Column(name = "API_RESPONSE_CODE")
+    @Enumerated(EnumType.STRING)
+    ApiStatusEnum apiResponseCode;
 }

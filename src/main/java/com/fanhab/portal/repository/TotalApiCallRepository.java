@@ -11,9 +11,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -21,15 +23,31 @@ import java.util.List;
  */
 @Repository
 public interface TotalApiCallRepository extends JpaRepository<TotalApiCall, Long>, JpaSpecificationExecutor<TotalApiCall> {
-    @Query("SELECT new com.fanhab.portal.dto.TotalCallApiDto(" +
-            "tac.id , tac.apiId, tac.apiStatus, tac.totalApiCallCount, tac.contractId, pc.companyId) " +
+    @Query("SELECT new com.fanhab.portal.dto.TotalCallApiDto( " +
+            " tac.id, tac.apiId, tac.contractId, tac.apiStatus, tac.totalApiCallCount, cast(tac.totalApiCallCount * cda.price as DOUBLE ), c.companyId ) " +
+            "FROM TotalApiCall tac " +
+            "INNER join ContractDetailAPI cda on cda.contractId = tac.contractId and cda.apiId = tac.apiId and cda.apiStatus = tac.apiStatus " +
+            "inner join Contract  c on c.companyId = cda.contractId "+
+            "WHERE tac.processState = 'NOT_CALCULATED' " +
+            "AND (:contractId IS NULL OR tac.contractId = :contractId) " +
+            "AND tac.fromDate >= :startDate and tac.toDate <= :endDate " +
+            "ORDER BY tac.contractId ASC")
+    Page<TotalCallApiDto> findNotCalculatedTotalApiCalls(
+            @Param("contractId") Long contractId,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate,
+            Pageable pageable);
+
+
+    @Query("SELECT " +
+            "tac.id , tac.apiId, tac.apiStatus, tac.totalApiCallCount, tac.contractId, pc.companyId " +
             "FROM TotalApiCall tac " +
             "JOIN ContractAPI ca ON ca.apiId = tac.apiId " +
             "JOIN Contract pc ON pc.id = ca.contractId " +
             "WHERE tac.processState = 'NOT_CALCULATED' AND pc.contractStatus = 'ACTIVE'")
-    List<TotalCallApiDto> findNotCalculatedTotalApiCalls();
+    List<Object> findNotCalculatedTotalApiCalls2();
 
     List<TotalApiCall> findByApiIdAndContractIdAndApiStatusAndProcessState(Long apiId, Long contractId, ApiStatusEnum apiStatus,ProcessStatusEnum processStatus);
 
-    Page<TotalApiCall> findByContractIdAndTotalApiCallCountBetweenAndProcessStatusOrderByTotalApiCallCountAsc(Long contractId, LocalDate startDate, LocalDate endDate, ProcessStatusEnum processStatus, Pageable pageable);
+    Page<TotalApiCall> findByContractIdAndTotalApiCallCountBetweenAndProcessStateOrderByTotalApiCallCountAsc(Long contractId, LocalDate startDate, LocalDate endDate, ProcessStatusEnum processStatus, Pageable pageable);
 }

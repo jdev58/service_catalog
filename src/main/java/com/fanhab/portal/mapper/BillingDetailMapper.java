@@ -10,7 +10,7 @@ public class BillingDetailMapper {
     public BillingDetailDto mapEntityToDto(BillingDetail billingDetail){
         BillingDetailDto billingDetailDto = new BillingDetailDto(
                 billingDetail.getBillingId(),
-                billingDetail.getApiCall(),
+                billingDetail.getApiId(),
                 billingDetail.getApiTotalAmount()
         );
         return  billingDetailDto;

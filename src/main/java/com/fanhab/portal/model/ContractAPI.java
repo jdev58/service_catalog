@@ -1,7 +1,6 @@
 package com.fanhab.portal.model;
 
 
-import com.fanhab.portal.dto.enums.ProviderEnum;
 import com.fanhab.portal.dto.enums.StatusEnum;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -36,7 +35,7 @@ public class ContractAPI extends BaseDomain {
     @JoinColumn(name = "API_ID", referencedColumnName = "ID",
             insertable = false, updatable = false,
             foreignKey = @ForeignKey(name = "FK_API_CATALOG"))
-    ApiCatalog apiCatalog;
+    Api apiCatalog;
 
 
     @Column(name = "ACTIVATE_DATE")
@@ -48,5 +47,9 @@ public class ContractAPI extends BaseDomain {
     @Enumerated(EnumType.STRING)
     private StatusEnum statusEnum;
 
+    @Column(name = "START_DATE",nullable = false)
+    private LocalDateTime startDate;
 
+    @Column(name = "END_DATE",nullable = false)
+    private LocalDateTime endDate;
 }

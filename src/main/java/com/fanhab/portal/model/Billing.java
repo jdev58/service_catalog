@@ -1,12 +1,14 @@
 package com.fanhab.portal.model;
 
 
-import com.fanhab.portal.dto.enums.BillStatus;
+import com.fanhab.portal.dto.enums.BillStatusEnum;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+
+import java.time.LocalDateTime;
 
 
 @Getter
@@ -53,7 +55,7 @@ public class Billing extends BaseDomain {
     @Column(name = "BILL_DISCOUNT")
     Long Discount;
 
-    @Column(name = "TOTAL_AMOUNT")
+    @Column(name = "BILL_TOTAL_AMOUNT")
     Double totalAmount;
 
 
@@ -61,8 +63,12 @@ public class Billing extends BaseDomain {
 
     @Column(name = "BILL_STATUS", nullable = false)
     @Enumerated(EnumType.STRING)
-    private BillStatus billStatus;
+    private BillStatusEnum billStatus;
 
+    @Column(name = "BILL_FROM_DATE")
+    LocalDateTime fromDate;
 
+    @Column(name = "BILL_TO_DATE")
+    LocalDateTime toDate;
 
 }

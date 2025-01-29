@@ -1,5 +1,5 @@
 package com.fanhab.portal.dto.enums;
 
-public enum BillStatus {
+public enum BillStatusEnum {
     READY, PAID
 }

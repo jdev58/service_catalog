@@ -34,7 +34,7 @@ public class ContractDetailAPI extends BaseDomain {
     @JoinColumn(name = "API_ID", referencedColumnName = "ID",
             insertable = false, updatable = false,
             foreignKey = @ForeignKey(name = "FK_CONTRACTDETAIL_API"))
-    ApiCatalog apiCatalog;
+    Api apiCatalog;
 
 
     @Column(name = "min_call_no")
@@ -47,7 +47,7 @@ public class ContractDetailAPI extends BaseDomain {
     Integer price;
 
 
-    @Column(name = "apiStatus")
+    @Column(name = "api_status")
     @Enumerated(EnumType.STRING)
     ApiStatusEnum apiStatus;
 

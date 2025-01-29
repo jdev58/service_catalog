@@ -14,10 +14,10 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @RequiredArgsConstructor
 @Entity
-@Table(name = "svc_api_catalog", indexes = {
+@Table(name = "svc_api", indexes = {
         @Index(unique = true, name = "IDX_PRT_API_CODE", columnList = "API_CODE")
 })
-public class ApiCatalog extends BaseDomain{
+public class Api extends BaseDomain{
     @Column(name = "API_CODE", nullable = false)
     private String apiCode;
 

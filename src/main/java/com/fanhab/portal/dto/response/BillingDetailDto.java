@@ -11,6 +11,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class BillingDetailDto {
     private Long billingId;
-    private Long apiCallId;
+    private Long apiId;
     private Double apiTotalAmount;
 }

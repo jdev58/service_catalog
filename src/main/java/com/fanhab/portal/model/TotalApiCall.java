@@ -39,7 +39,7 @@ public class TotalApiCall extends BaseDomain {
     @JoinColumn(name = "API_ID", referencedColumnName = "ID",
             insertable = false, updatable = false,
             foreignKey = @ForeignKey(name = "FK_TOTALAPI_API"))
-    ApiCatalog apiCatalog;
+    Api apiCatalog;
 
 
     @Column(name = "TOTAL_API_COUNT")
@@ -57,9 +57,13 @@ public class TotalApiCall extends BaseDomain {
     @Enumerated(EnumType.STRING)
     ApiCountSourceEnum apiCountSource;
 
-    @Column(name = "TOTAL_API_CALL_DATE")
-    LocalDate totalApiCallDate;
+//    @Column(name = "TOTAL_API_CALL_DATE")
+//    LocalDate totalApiCallDate;
 
+    @Column(name = "API_CALL_FROM_DATE")
+    LocalDateTime fromDate;
 
+    @Column(name = "API_CALL_TO_DATE")
+    LocalDateTime toDate;
 
 }

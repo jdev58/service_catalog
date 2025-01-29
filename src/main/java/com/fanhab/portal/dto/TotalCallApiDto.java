@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -14,10 +16,9 @@ import lombok.Setter;
 public class TotalCallApiDto {
     private Long totalCallApiId;
     private Long apiId;
+    private Long contractId;
     private ApiStatusEnum apiStatus;
     private Integer totalApiCount;
-    private Long contractId;
+    private Double totalAmount;
     private Long companyId;
-
-
 }
