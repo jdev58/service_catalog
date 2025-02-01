@@ -1,4 +1,4 @@
-package com.fanhab.portal.model;
+package com.fanhab.portal.portal.model;
 
 
 import com.fanhab.portal.dto.enums.ApiCountSourceEnum;
@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 

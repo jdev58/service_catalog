@@ -1,14 +1,12 @@
-package com.fanhab.portal.model;
+package com.fanhab.portal.portal.model;
 
 
-import com.fanhab.portal.dto.enums.StatusEnum;
+import com.fanhab.portal.dto.enums.ApiStatusEnum;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-
-import java.time.LocalDateTime;
 
 
 @Getter
@@ -16,16 +14,17 @@ import java.time.LocalDateTime;
 @ToString(callSuper = true)
 @RequiredArgsConstructor
 @Entity
-@Table(name = "svc_contract_api")
-public class ContractAPI extends BaseDomain {
+@Table(name = "svc_contract_detail_api")
+public class ContractDetailAPI extends BaseDomain {
     @Column(name = "CONTRACT_ID")
     Long contractId;
 
     @ManyToOne(fetch= FetchType.EAGER)
     @JoinColumn(name = "CONTRACT_ID", referencedColumnName = "ID",
             insertable = false, updatable = false,
-            foreignKey = @ForeignKey(name = "FK_CONTRACT_REF"))
+            foreignKey = @ForeignKey(name = "FK_CONTRACTDETAIL_CONTRACT"))
     Contract contract;
+
 
 
     @Column(name = "API_ID")
@@ -34,22 +33,23 @@ public class ContractAPI extends BaseDomain {
     @ManyToOne(fetch= FetchType.EAGER)
     @JoinColumn(name = "API_ID", referencedColumnName = "ID",
             insertable = false, updatable = false,
-            foreignKey = @ForeignKey(name = "FK_API_CATALOG"))
+            foreignKey = @ForeignKey(name = "FK_CONTRACTDETAIL_API"))
     Api apiCatalog;
 
 
-    @Column(name = "ACTIVATE_DATE")
-    @Temporal(TemporalType.TIMESTAMP)
-    private LocalDateTime activateDate;
+    @Column(name = "min_call_no")
+    Integer minCallNo;
+
+    @Column(name = "max_call_no")
+    Integer maxCallNo;
+
+    @Column(name = "per_call_price")
+    Integer price;
 
 
-    @Column(name = "API_STATUS", nullable = false)
+    @Column(name = "api_status")
     @Enumerated(EnumType.STRING)
-    private StatusEnum statusEnum;
+    ApiStatusEnum apiStatus;
 
-    @Column(name = "START_DATE",nullable = false)
-    private LocalDateTime startDate;
 
-    @Column(name = "END_DATE",nullable = false)
-    private LocalDateTime endDate;
 }

@@ -6,14 +6,13 @@ import com.fanhab.portal.dto.enums.ProcessStatusEnum;
 import com.fanhab.portal.dto.request.CreateBillingDto;
 import com.fanhab.portal.dto.response.BillingDto;
 import com.fanhab.portal.mapper.BillingMapper;
-import com.fanhab.portal.model.Billing;
-import com.fanhab.portal.model.BillingDetail;
-import com.fanhab.portal.model.ContractDetailAPI;
-import com.fanhab.portal.model.TotalApiCall;
-import com.fanhab.portal.repository.BillingDetailRepository;
-import com.fanhab.portal.repository.BillingRepository;
-import com.fanhab.portal.repository.ContractDetailApiRepository;
-import com.fanhab.portal.repository.TotalApiCallRepository;
+import com.fanhab.portal.portal.model.Billing;
+import com.fanhab.portal.portal.model.BillingDetail;
+import com.fanhab.portal.portal.model.TotalApiCall;
+import com.fanhab.portal.portal.repository.BillingDetailRepository;
+import com.fanhab.portal.portal.repository.BillingRepository;
+import com.fanhab.portal.portal.repository.ContractDetailApiRepository;
+import com.fanhab.portal.portal.repository.TotalApiCallRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,8 +36,11 @@ public class BillingService {
     private BillingDetailRepository billingDetailRepository;
     @Autowired
     private BillingMapper billingMapper;
+    @Autowired
+    private TotalApiCallService totalApiCallService;
 
     public List<BillingDto> createBillingAndDetailsForNotCalculatedApiCalls(CreateBillingDto createBillingDto) {
+        totalApiCallService.createTotalapiCall(createBillingDto);
         int pageIndex = 0;
         int pageSize = 1000;
         List<BillingDto> billingDtoList = new ArrayList<>();
@@ -60,7 +62,7 @@ public class BillingService {
         return totalApiCallRepository.findNotCalculatedTotalApiCalls(
                 createBillingDto.getContractId(),
                 createBillingDto.getFromDate().atStartOfDay(),
-                createBillingDto.getToDate().atTime(23, 59, 59, 999999999),
+                createBillingDto.getToDate().atTime(23, 59, 59),
                 pageable
         );
     }

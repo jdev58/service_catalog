@@ -1,6 +1,5 @@
-package com.fanhab.portal.dto;
+package com.fanhab.portal.wso2.dto;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

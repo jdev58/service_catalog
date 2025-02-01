@@ -1,4 +1,4 @@
-package com.fanhab.portal.model;
+package com.fanhab.portal.wso2.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,7 +9,7 @@ import lombok.*;
 
 
 @Entity
-@Table(name = "apiRequeststest")
+@Table(name = "api_Requeststest")
 @Getter
 @Setter
 @ToString

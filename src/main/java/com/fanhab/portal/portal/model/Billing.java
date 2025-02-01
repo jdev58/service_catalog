@@ -1,4 +1,4 @@
-package com.fanhab.portal.model;
+package com.fanhab.portal.portal.model;
 
 
 import com.fanhab.portal.dto.enums.BillStatusEnum;

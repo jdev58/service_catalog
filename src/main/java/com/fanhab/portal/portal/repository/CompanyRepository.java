@@ -1,8 +1,7 @@
-package com.fanhab.portal.repository;
+package com.fanhab.portal.portal.repository;
 
 
-import com.fanhab.portal.model.Billing;
-import com.fanhab.portal.model.Company;
+import com.fanhab.portal.portal.model.Company;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;

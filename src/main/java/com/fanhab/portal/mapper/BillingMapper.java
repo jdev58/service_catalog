@@ -2,8 +2,8 @@ package com.fanhab.portal.mapper;
 
 import com.fanhab.portal.dto.response.BillingDetailDto;
 import com.fanhab.portal.dto.response.BillingDto;
-import com.fanhab.portal.model.Billing;
-import com.fanhab.portal.model.BillingDetail;
+import com.fanhab.portal.portal.model.Billing;
+import com.fanhab.portal.portal.model.BillingDetail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

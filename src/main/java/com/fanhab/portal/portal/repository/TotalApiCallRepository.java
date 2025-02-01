@@ -1,11 +1,10 @@
-package com.fanhab.portal.repository;
+package com.fanhab.portal.portal.repository;
 
 
 import com.fanhab.portal.dto.TotalCallApiDto;
 import com.fanhab.portal.dto.enums.ApiStatusEnum;
 import com.fanhab.portal.dto.enums.ProcessStatusEnum;
-import com.fanhab.portal.model.Billing;
-import com.fanhab.portal.model.TotalApiCall;
+import com.fanhab.portal.portal.model.TotalApiCall;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,10 +23,10 @@ import java.util.List;
 @Repository
 public interface TotalApiCallRepository extends JpaRepository<TotalApiCall, Long>, JpaSpecificationExecutor<TotalApiCall> {
     @Query("SELECT new com.fanhab.portal.dto.TotalCallApiDto( " +
-            " tac.id, tac.apiId, tac.contractId, tac.apiStatus, tac.totalApiCallCount, cast(tac.totalApiCallCount * cda.price as DOUBLE ), c.companyId ) " +
+            " tac.id, tac.apiId, tac.contractId, tac.apiStatus, tac.totalApiCallCount, cast(CAST(tac.totalApiCallCount AS long ) * cda.price as DOUBLE ), c.companyId ) " +
             "FROM TotalApiCall tac " +
             "INNER join ContractDetailAPI cda on cda.contractId = tac.contractId and cda.apiId = tac.apiId and cda.apiStatus = tac.apiStatus " +
-            "inner join Contract  c on c.companyId = cda.contractId "+
+            "inner join Contract  c on c.id = cda.contractId "+
             "WHERE tac.processState = 'NOT_CALCULATED' " +
             "AND (:contractId IS NULL OR tac.contractId = :contractId) " +
             "AND tac.fromDate >= :startDate and tac.toDate <= :endDate " +
@@ -37,6 +36,12 @@ public interface TotalApiCallRepository extends JpaRepository<TotalApiCall, Long
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate,
             Pageable pageable);
+
+    @Query("SELECT COUNT(t) FROM TotalApiCall t WHERE t.fromDate BETWEEN :start AND :end AND t.isDeleted <> true ")
+    long countTotalApiCallsWithinTimeRange(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query("SELECT MAX(t.toDate) FROM TotalApiCall t WHERE t.isDeleted != true ")
+    LocalDateTime findMaxToDate();
 
 
     @Query("SELECT " +

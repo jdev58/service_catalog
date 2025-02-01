@@ -1,8 +1,7 @@
 package com.fanhab.portal.mapper;
 
 import com.fanhab.portal.dto.response.BillingDetailDto;
-import com.fanhab.portal.dto.response.BillingDto;
-import com.fanhab.portal.model.BillingDetail;
+import com.fanhab.portal.portal.model.BillingDetail;
 import org.springframework.stereotype.Component;
 
 @Component

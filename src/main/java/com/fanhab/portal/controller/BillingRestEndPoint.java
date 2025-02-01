@@ -1,10 +1,7 @@
 package com.fanhab.portal.controller;
 
-import com.fanhab.portal.dto.enums.ProcessStatusEnum;
 import com.fanhab.portal.dto.request.CreateBillingDto;
 import com.fanhab.portal.dto.response.BillingDto;
-import com.fanhab.portal.model.TotalApiCall;
-import com.fanhab.portal.repository.TotalApiCallRepository;
 import com.fanhab.portal.service.BillingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
