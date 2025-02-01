@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 
@@ -66,9 +67,9 @@ public class Billing extends BaseDomain {
     private BillStatusEnum billStatus;
 
     @Column(name = "BILL_FROM_DATE")
-    LocalDateTime fromDate;
+    LocalDate fromDate;
 
     @Column(name = "BILL_TO_DATE")
-    LocalDateTime toDate;
+    LocalDate toDate;
 
 }

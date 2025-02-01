@@ -13,6 +13,8 @@ import java.util.List;
 public class BillingDto {
     private Long companyId;
     private Long contractId;
+    private String companyName;
+    private String contractNo;
     private Long Discount;
     private String BillStatus;
     private Double totalAmount;

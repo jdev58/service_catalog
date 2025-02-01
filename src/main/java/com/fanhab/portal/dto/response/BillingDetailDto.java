@@ -12,5 +12,7 @@ import lombok.Setter;
 public class BillingDetailDto {
     private Long billingId;
     private Long apiId;
+    private String apiName;
+    private String apiStatus;
     private Double apiTotalAmount;
 }

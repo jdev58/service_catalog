@@ -8,11 +8,9 @@ import com.fanhab.portal.dto.response.BillingDto;
 import com.fanhab.portal.mapper.BillingMapper;
 import com.fanhab.portal.portal.model.Billing;
 import com.fanhab.portal.portal.model.BillingDetail;
+import com.fanhab.portal.portal.model.Contract;
 import com.fanhab.portal.portal.model.TotalApiCall;
-import com.fanhab.portal.portal.repository.BillingDetailRepository;
-import com.fanhab.portal.portal.repository.BillingRepository;
-import com.fanhab.portal.portal.repository.ContractDetailApiRepository;
-import com.fanhab.portal.portal.repository.TotalApiCallRepository;
+import com.fanhab.portal.portal.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +36,12 @@ public class BillingService {
     private BillingMapper billingMapper;
     @Autowired
     private TotalApiCallService totalApiCallService;
+    @Autowired
+    private CompanyRepository companyRepository;
+    @Autowired
+    private ContractRepository contractRepository;
+    @Autowired
+    private ApiCatalogRepository apiCatalogRepository;
 
     public List<BillingDto> createBillingAndDetailsForNotCalculatedApiCalls(CreateBillingDto createBillingDto) {
         totalApiCallService.createTotalapiCall(createBillingDto);
@@ -50,7 +54,7 @@ public class BillingService {
                 break;
             }
             Map<Long, List<TotalCallApiDto>> apiCallGroupedByContractId = groupedByContractId(totalApiCallPage.getContent());
-            billingDtoList = createBillingAndBillingDetail(apiCallGroupedByContractId);
+            billingDtoList = createBillingAndBillingDetail(apiCallGroupedByContractId,createBillingDto);
             setApiCallAsCalculated(totalApiCallPage.getContent());
             pageIndex++;
         }
@@ -89,7 +93,7 @@ public class BillingService {
 
     }
     @Transactional
-    private List<BillingDto> createBillingAndBillingDetail(Map<Long, List<TotalCallApiDto>> groupedApiCall){
+    private List<BillingDto> createBillingAndBillingDetail(Map<Long, List<TotalCallApiDto>> groupedApiCall,CreateBillingDto createBillingDto){
         List<BillingDto> billingDtoList = new ArrayList<>();
         for (Map.Entry<Long, List<TotalCallApiDto>> entry : groupedApiCall.entrySet()) {
             Long contractId = entry.getKey();
@@ -102,8 +106,12 @@ public class BillingService {
 
             Billing billing = new Billing();
             billing.setCompanyId(companyId);
+            billing.setCompany(companyRepository.findById(companyId).get());
             billing.setContractId(contractId);
+            billing.setContract(contractRepository.findById(contractId).get());
             billing.setTotalAmount(totalAmount);
+            billing.setFromDate(createBillingDto.getFromDate());
+            billing.setToDate(createBillingDto.getToDate());
             billing.setBillStatus(BillStatusEnum.READY);
 
             billing = billingRepository.save(billing);
@@ -113,8 +121,10 @@ public class BillingService {
                 BillingDetail billingDetail = new BillingDetail();
                 billingDetail.setBillingId(billing.getId());
                 billingDetail.setApiId(totalCallApiDto.getApiId());
+                billingDetail.setApi(apiCatalogRepository.findById(totalCallApiDto.getApiId()).get());
                 billingDetail.setApiResponseCode(totalCallApiDto.getApiStatus());
                 billingDetail.setApiTotalAmount(totalCallApiDto.getTotalAmount());
+
 
                 billingDetails.add(billingDetailRepository.save(billingDetail));
             }

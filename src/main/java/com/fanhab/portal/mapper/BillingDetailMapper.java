@@ -10,6 +10,8 @@ public class BillingDetailMapper {
         BillingDetailDto billingDetailDto = new BillingDetailDto(
                 billingDetail.getBillingId(),
                 billingDetail.getApiId(),
+                billingDetail.getApi().getApiName(),
+                billingDetail.getApiResponseCode().name(),
                 billingDetail.getApiTotalAmount()
         );
         return  billingDetailDto;

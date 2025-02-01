@@ -21,6 +21,8 @@ public class BillingMapper {
         return new BillingDto(
                 billing.getCompanyId(),
                 billing.getContractId(),
+                billing.getCompany().getCompanyName(),
+                billing.getContract().getContractNumber(),
                 billing.getDiscount(),
                 billing.getBillStatus().name(),
                 billing.getTotalAmount(),
