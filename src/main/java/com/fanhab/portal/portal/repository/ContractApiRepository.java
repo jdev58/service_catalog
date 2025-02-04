@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface ContractApiRepository extends JpaRepository<ContractAPI,Long> {
     List<ContractAPI> findByStatusEnum(StatusEnum statusEnum);
+    List<ContractAPI> findByContractId(Long id);
 }

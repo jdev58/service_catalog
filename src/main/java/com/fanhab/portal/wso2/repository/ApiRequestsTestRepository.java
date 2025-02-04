@@ -23,7 +23,7 @@ public interface ApiRequestsTestRepository extends JpaRepository<ApiRequestsTest
 //                                               @Param("endDate") Long endDate);
 
     @Query(value = "SELECT a.applicationowner, a.apiname, a.responsecode, COUNT(a.responsecode) as total_count " +
-            "FROM api_Requeststest a " +
+            "FROM apiRequeststest a " +
             "WHERE a.responsecode IN (200, 231) " +
             "AND a.requesTtimestamp BETWEEN :startDate AND :endDate " +
             "GROUP BY a.applicationowner, a.apiname, a.responsecode " +

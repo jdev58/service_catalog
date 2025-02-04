@@ -17,6 +17,6 @@ public class BillingDto {
     private String contractNo;
     private Long Discount;
     private String BillStatus;
-    private Double totalAmount;
+    private Long totalAmount;
     List<BillingDetailDto> billingDetailDtoList;
 }

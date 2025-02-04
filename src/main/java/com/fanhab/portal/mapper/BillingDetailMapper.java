@@ -12,7 +12,7 @@ public class BillingDetailMapper {
                 billingDetail.getApiId(),
                 billingDetail.getApi().getApiName(),
                 billingDetail.getApiResponseCode().name(),
-                billingDetail.getApiTotalAmount()
+                billingDetail.getApiTotalAmount().longValue()
         );
         return  billingDetailDto;
     }

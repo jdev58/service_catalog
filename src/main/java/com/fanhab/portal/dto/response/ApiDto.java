@@ -5,14 +5,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
-@Setter
 @AllArgsConstructor
+@Setter
+@Getter
 @NoArgsConstructor
-public class BillingDetailDto {
-    private Long billingId;
-    private Long apiId;
+public class ApiDto {
+    private String apiCode;
     private String apiName;
-    private String apiStatus;
-    private Long apiTotalAmount;
 }

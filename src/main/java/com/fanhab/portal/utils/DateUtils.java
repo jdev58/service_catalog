@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Date;
 
 public class DateUtils {
     public static Timestamp convertLocalDateToTimestamp(LocalDate localDate) {
@@ -37,5 +38,9 @@ public class DateUtils {
         }
 
         return timestamp.getTime();
+    }
+    public static LocalDate convertTimestampToLocalDate(Long timestamp) {
+        Date date = new Date(timestamp);
+        return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }
 }

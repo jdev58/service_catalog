@@ -1,5 +1,6 @@
 package com.fanhab.portal.controller;
 
+import com.fanhab.portal.dto.enums.GenerateTypeEnum;
 import com.fanhab.portal.dto.request.CreateBillingDto;
 import com.fanhab.portal.dto.response.BillingDto;
 import com.fanhab.portal.service.BillingService;
@@ -20,9 +21,15 @@ public class BillingRestEndPoint {
 //        List<TotalApiCall> aa = repository.findByProcessState(process);
 //        return new ResponseEntity<>(aa, HttpStatus.OK);
 //    }
-    @PostMapping
-    public ResponseEntity<List<BillingDto>> save(@RequestBody CreateBillingDto createBillingDto){
-        List<BillingDto> billingDtoList = billingService.createBillingAndDetailsForNotCalculatedApiCalls(createBillingDto);
+    @PostMapping("/AutoGenerate")
+    public ResponseEntity<List<BillingDto>> autoSave(@RequestBody CreateBillingDto createBillingDto){
+        List<BillingDto> billingDtoList = billingService.createBillingAndDetailsForNotCalculatedApiCalls(createBillingDto, GenerateTypeEnum.SYSTEM);
         return new ResponseEntity<>(billingDtoList,HttpStatus.CREATED);
     }
+    @PostMapping("/ManualGenerate")
+    public ResponseEntity<List<BillingDto>> manualSave(@RequestBody CreateBillingDto createBillingDto){
+        List<BillingDto> billingDtoList = billingService.createBillingAndDetailsForNotCalculatedApiCalls(createBillingDto,GenerateTypeEnum.MANUAL);
+        return new ResponseEntity<>(billingDtoList,HttpStatus.CREATED);
+    }
+
 }

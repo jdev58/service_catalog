@@ -25,7 +25,7 @@ public class BillingMapper {
                 billing.getContract().getContractNumber(),
                 billing.getDiscount(),
                 billing.getBillStatus().name(),
-                billing.getTotalAmount(),
+                billing.getTotalAmount().longValue(),
                 billingDetailDtoList
         );
     }

@@ -17,5 +17,7 @@ public class CreateBillingDto {
     private Long contractId;
     private LocalDate fromDate;
     private LocalDate toDate;
+    private Long startDate;
+    private Long endDate;
     private RateCalculationState rateCalculationState;
 }
