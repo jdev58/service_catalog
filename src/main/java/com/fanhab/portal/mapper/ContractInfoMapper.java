@@ -1,13 +1,17 @@
 package com.fanhab.portal.mapper;
 
+import com.fanhab.portal.dto.enums.ApiStatusEnum;
 import com.fanhab.portal.dto.response.ApiDto;
 import com.fanhab.portal.dto.response.ContractInfoDto;
+import com.fanhab.portal.dto.response.PricePerStatus;
 import com.fanhab.portal.portal.model.Api;
 import com.fanhab.portal.portal.model.Contract;
 import com.fanhab.portal.portal.model.ContractAPI;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+
+import static com.fanhab.portal.utils.DateUtils.convertLocalDateTimeToTimestamp;
 
 @Component
 public class ContractInfoMapper {
@@ -16,15 +20,22 @@ public class ContractInfoMapper {
                 contract.getId(),
                 contract.getContractNumber(),
                 contract.getCompany().getCompanyName(),
+                convertLocalDateTimeToTimestamp(contract.getStartDate()),
+                convertLocalDateTimeToTimestamp(contract.getEndDate()),
                 apiDto
                 );
         return contractInfoDto;
     }
-    public ApiDto apiEntityToDto(Api api){
+    public ApiDto apiEntityToDto(Api api,List<PricePerStatus> pricePerStatuses){
         ApiDto apiDto = new ApiDto(
                 api.getApiCode(),
-                api.getApiName()
+                api.getApiName(),
+                pricePerStatuses
         );
         return apiDto;
+    }
+    public PricePerStatus priceMapToPricePerStatusDto(ApiStatusEnum apiStatusEnum,Integer perPrice){
+        PricePerStatus pricePerStatus = new PricePerStatus(apiStatusEnum,perPrice);
+        return pricePerStatus;
     }
 }

@@ -23,7 +23,7 @@ import java.util.List;
 @Repository
 public interface TotalApiCallRepository extends JpaRepository<TotalApiCall, Long>, JpaSpecificationExecutor<TotalApiCall> {
     @Query("SELECT new com.fanhab.portal.dto.TotalCallApiDto( " +
-            " tac.id, tac.apiId, tac.contractId, tac.apiStatus, tac.totalApiCallCount, cast(CAST(tac.totalApiCallCount AS long ) * cda.price as DOUBLE ), c.companyId ) " +
+            " tac.id, tac.apiId, tac.contractId, tac.apiStatus, tac.totalApiCallCount,cda.price ,  cast(CAST(tac.totalApiCallCount AS long ) * cda.price as DOUBLE ), c.companyId ) " +
             "FROM TotalApiCall tac " +
             "INNER join ContractDetailAPI cda on cda.contractId = tac.contractId and cda.apiId = tac.apiId and cda.apiStatus = tac.apiStatus " +
             "inner join Contract  c on c.id = cda.contractId "+

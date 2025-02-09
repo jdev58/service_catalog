@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.sql.Timestamp;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -14,5 +16,8 @@ public class BillingDetailDto {
     private Long apiId;
     private String apiName;
     private String apiStatus;
+    private Integer totalApiCallCount;
     private Long apiTotalAmount;
+    private Integer pricePerCall;
+
 }

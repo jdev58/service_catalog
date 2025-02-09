@@ -18,4 +18,6 @@ import lombok.ToString;
 public class Company extends BaseDomain {
     @Column(name = "COMPANY_NAME")
     String companyName;
+    @Column(name = "COMPANY_PERSIAN_NAME")
+    String companyPersianName;
 }

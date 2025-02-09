@@ -24,6 +24,9 @@ public class Api extends BaseDomain{
     @Column(name = "API_NAME", nullable = false)
     private String apiName;
 
+    @Column(name = "API_PERSIAN_NAME")
+    private String apiPersianName;
+
     @Column(name = "API_DESCR", nullable = false)
     private String apiDescr;
 

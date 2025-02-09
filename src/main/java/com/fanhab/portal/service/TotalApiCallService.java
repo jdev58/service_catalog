@@ -46,8 +46,8 @@ public class TotalApiCallService {
             if (totalCallEndDate != null && totalCallEndDate.isAfter(startDate)) {
                 startDate = totalCallEndDate.plusDays(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
             }
-            Long startDateL = convertTimestampToLong(convertLocalDateTimeToTimestamp(startDate));
-            Long endDateL = convertTimestampToLong(convertLocalDateTimeToTimestamp(endDate));
+            Long startDateL = convertTimestampToLong(createBillingDto.getStartDate())*1000;
+            Long endDateL = convertTimestampToLong(createBillingDto.getEndDate())*1000 + 999;
 
             //List<ApiRequestDto> apiRequestDtos = apiRequestRepository.findApiRequestsGrouped(startDateL, endDateL);
             List<Object[]> results = apiRequestRepository.findApiRequestsGrouped(startDateL, endDateL);

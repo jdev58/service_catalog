@@ -47,9 +47,9 @@ public class ContractAPI extends BaseDomain {
     @Enumerated(EnumType.STRING)
     private StatusEnum statusEnum;
 
-    @Column(name = "START_DATE",nullable = false)
-    private LocalDateTime startDate;
-
-    @Column(name = "END_DATE",nullable = false)
-    private LocalDateTime endDate;
+//    @Column(name = "START_DATE",nullable = false)
+//    private LocalDateTime startDate;
+//
+//    @Column(name = "END_DATE",nullable = false)
+//    private LocalDateTime endDate;
 }

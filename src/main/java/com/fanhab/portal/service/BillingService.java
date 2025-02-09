@@ -5,15 +5,21 @@ import com.fanhab.portal.dto.enums.BillStatusEnum;
 import com.fanhab.portal.dto.enums.GenerateTypeEnum;
 import com.fanhab.portal.dto.enums.ProcessStatusEnum;
 import com.fanhab.portal.dto.request.CreateBillingDto;
+import com.fanhab.portal.dto.request.DebitDto;
+import com.fanhab.portal.dto.request.VerfiyBillingDto;
+import com.fanhab.portal.dto.response.BillingDetailDto;
 import com.fanhab.portal.dto.response.BillingDto;
+import com.fanhab.portal.dto.response.DebitResponseDto;
 import com.fanhab.portal.exception.ServiceException;
 import com.fanhab.portal.exception.WriteException;
+import com.fanhab.portal.mapper.BillingDetailMapper;
 import com.fanhab.portal.mapper.BillingMapper;
 import com.fanhab.portal.portal.model.Billing;
 import com.fanhab.portal.portal.model.BillingDetail;
 import com.fanhab.portal.portal.model.Contract;
 import com.fanhab.portal.portal.model.TotalApiCall;
 import com.fanhab.portal.portal.repository.*;
+import com.fanhab.portal.service.proxy.ledger.LedgerDebitService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +36,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.fanhab.portal.utils.DateUtils.convertTimestampToLocalDate;
+import static com.fanhab.portal.utils.DateUtils.convertTimestampToLong;
 
 @Service
 public class BillingService {
@@ -44,6 +51,8 @@ public class BillingService {
     @Autowired
     private BillingMapper billingMapper;
     @Autowired
+    private BillingDetailMapper billingDetailMapper;
+    @Autowired
     private TotalApiCallService totalApiCallService;
     @Autowired
     private CompanyRepository companyRepository;
@@ -51,10 +60,12 @@ public class BillingService {
     private ContractRepository contractRepository;
     @Autowired
     private ApiCatalogRepository apiCatalogRepository;
+    @Autowired
+    private LedgerDebitService ledgerDebitService;
 
     public List<BillingDto> createBillingAndDetailsForNotCalculatedApiCalls(CreateBillingDto createBillingDto, GenerateTypeEnum generateTypeEnum) {
-        createBillingDto.setFromDate(convertTimestampToLocalDate(createBillingDto.getStartDate()));
-        createBillingDto.setToDate(convertTimestampToLocalDate(createBillingDto.getEndDate()));
+        createBillingDto.setFromDate(convertTimestampToLocalDate(convertTimestampToLong(createBillingDto.getStartDate())));
+        createBillingDto.setToDate(convertTimestampToLocalDate(convertTimestampToLong(createBillingDto.getEndDate())));
         if (generateTypeEnum == GenerateTypeEnum.SYSTEM &&
                 Stream.of(createBillingDto.getCompanyId(), createBillingDto.getContractId()).anyMatch(Objects::nonNull)) {
             throw ServiceException.badRequestException("For auto-generate, contract and company should be null.");
@@ -67,6 +78,9 @@ public class BillingService {
         List<BillingDto> billingDtoList = new ArrayList<>();
         while (true){
             Page<TotalCallApiDto> totalApiCallPage = fetchPagedTotalApiCall(createBillingDto, pageIndex, pageSize);
+            if(pageIndex == 0 && totalApiCallPage.isEmpty() ){
+                throw ServiceException.notFoundException("there are no not-calculated data in totalApiCall table",HttpStatus.NOT_FOUND);
+            }
             if (totalApiCallPage.isEmpty()) {
                 break;
             }
@@ -133,7 +147,7 @@ public class BillingService {
 
             billing = billingRepository.save(billing);
 
-            List<BillingDetail> billingDetails = new ArrayList<>();
+            List<BillingDetailDto> billingDetailDtos = new ArrayList<>();
             for(TotalCallApiDto totalCallApiDto:apiDtos){
                 BillingDetail billingDetail = new BillingDetail();
                 billingDetail.setBillingId(billing.getId());
@@ -143,9 +157,12 @@ public class BillingService {
                 billingDetail.setApiTotalAmount(totalCallApiDto.getTotalAmount());
 
 
-                billingDetails.add(billingDetailRepository.save(billingDetail));
+
+                BillingDetailDto billingDetailDto = billingDetailMapper.mapEntityToDto(
+                        billingDetailRepository.save(billingDetail),totalCallApiDto.getTotalApiCount(), totalCallApiDto.getPerPrice());
+                billingDetailDtos.add(billingDetailDto);
             }
-            BillingDto billingDto = billingMapper.mapEntityToDto(billing, billingDetails);
+            BillingDto billingDto = billingMapper.mapEntityToDto(billing, billingDetailDtos);
             billingDtoList.add(billingDto);
         }
         return billingDtoList;
@@ -206,5 +223,31 @@ public class BillingService {
 
             throw WriteException.alreadyExistException("billing", message.toString(), HttpStatus.CONFLICT);
         }
+    }
+
+    public void setVerifiedBilling(List<Long> billingId){
+        billingId.forEach(id -> updateBillingStatus(id,BillStatusEnum.VERIFIED));
+    }
+
+    public List<DebitResponseDto> verifiedBilling(VerfiyBillingDto verfiyBillingDto){
+        setVerifiedBilling(verfiyBillingDto.getBillingId());
+        List<Billing> billings = billingRepository.findByBillStatus(BillStatusEnum.VERIFIED);
+        List<DebitResponseDto> debitResponseDtos = new ArrayList<>();
+        for(Billing billing : billings){
+            DebitDto debitDto = billingMapper.mapEntityToDebitDto(billing);
+            DebitResponseDto responseDto = ledgerDebitService.sendToDebit(debitDto);
+            if (responseDto != null){
+                updateBillingStatus(billing.getId(),BillStatusEnum.PAID);
+            }
+            debitResponseDtos.add(responseDto);
+        }
+        return debitResponseDtos;
+    }
+    @Transactional
+    public void updateBillingStatus(Long id, BillStatusEnum newStatus) {
+        Billing billing = billingRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Billing not found for ID: " + id));
+        billing.setBillStatus(newStatus);
+        billingRepository.save(billing);
     }
 }

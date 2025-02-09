@@ -19,6 +19,7 @@ public class TotalCallApiDto {
     private Long contractId;
     private ApiStatusEnum apiStatus;
     private Integer totalApiCount;
+    private Integer perPrice;
     private Double totalAmount;
     private Long companyId;
 }

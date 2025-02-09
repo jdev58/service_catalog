@@ -8,6 +8,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 
 @Getter
 @Setter
@@ -33,5 +36,11 @@ public class Contract extends BaseDomain {
 
     @Column(name = "CONTRACT_NUMBER",nullable = false)
     private String contractNumber;
+
+    @Column(name = "START_DATE",nullable = false)
+    private LocalDateTime startDate;
+
+    @Column(name = "END_DATE",nullable = false)
+    private LocalDateTime endDate;
 
 }

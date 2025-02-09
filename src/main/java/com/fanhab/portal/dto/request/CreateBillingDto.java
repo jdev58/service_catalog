@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 
 @Getter
@@ -17,7 +18,7 @@ public class CreateBillingDto {
     private Long contractId;
     private LocalDate fromDate;
     private LocalDate toDate;
-    private Long startDate;
-    private Long endDate;
+    private Timestamp startDate;
+    private Timestamp endDate;
     private RateCalculationState rateCalculationState;
 }
