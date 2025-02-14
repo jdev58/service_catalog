@@ -37,9 +37,19 @@ public class BillingRestEndPoint {
     }
 
     @PostMapping("/VerifyBilling")
-    public ResponseEntity<List<DebitResponseDto>> manualSave(@RequestBody VerfiyBillingDto verfiyBillingDto){
-        List<DebitResponseDto> debitResponseDtos = billingService.verifiedBilling(verfiyBillingDto);
+    public ResponseEntity<BillingDto> verifyBilling(@RequestBody VerfiyBillingDto verfiyBillingDto){
+        BillingDto billingDto = billingService.verifiedBilling(verfiyBillingDto);
+        return new ResponseEntity<>(billingDto,HttpStatus.OK);
+    }
+    @PostMapping("/PayBilling")
+    public ResponseEntity<DebitResponseDto> payBilling(@RequestBody VerfiyBillingDto verfiyBillingDto){
+        DebitResponseDto debitResponseDtos = billingService.paidBlling(verfiyBillingDto);
         return new ResponseEntity<>(debitResponseDtos,HttpStatus.OK);
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> softDeleteBilling(@PathVariable Long id) {
+        billingService.softDeleteBilling(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
 }

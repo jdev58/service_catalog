@@ -12,9 +12,11 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BillingDetailDto {
-    private Long billingId;
+    private Long billingDetailId;
     private Long apiId;
     private String apiName;
+    private String apiPersianName;
+    private String apiCode;
     private String apiStatus;
     private Integer totalApiCallCount;
     private Long apiTotalAmount;

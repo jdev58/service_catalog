@@ -18,7 +18,7 @@ public class ContractInfoDto {
     private Long contractId;
     private String contractNo;
     private String companyName;
-    private Timestamp contractStartDate;
-    private Timestamp contractEndDate;
+    private Long contractStartDate;
+    private Long contractEndDate;
     private List<ApiDto> apiDtoList = new ArrayList<>();
 }

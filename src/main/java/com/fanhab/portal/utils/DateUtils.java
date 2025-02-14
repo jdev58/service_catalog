@@ -40,7 +40,8 @@ public class DateUtils {
         return timestamp.getTime();
     }
     public static LocalDate convertTimestampToLocalDate(Long timestamp) {
-        Date date = new Date(timestamp);
+        Date date = new Date(timestamp * 1000);
         return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }
+
 }

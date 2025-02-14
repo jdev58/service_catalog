@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 import static com.fanhab.portal.utils.DateUtils.convertLocalDateTimeToTimestamp;
+import static com.fanhab.portal.utils.DateUtils.convertTimestampToLong;
 
 @Component
 public class ContractInfoMapper {
@@ -20,8 +21,8 @@ public class ContractInfoMapper {
                 contract.getId(),
                 contract.getContractNumber(),
                 contract.getCompany().getCompanyName(),
-                convertLocalDateTimeToTimestamp(contract.getStartDate()),
-                convertLocalDateTimeToTimestamp(contract.getEndDate()),
+                convertTimestampToLong(convertLocalDateTimeToTimestamp(contract.getStartDate())),
+                convertTimestampToLong(convertLocalDateTimeToTimestamp(contract.getEndDate())),
                 apiDto
                 );
         return contractInfoDto;

@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.fanhab.portal.utils.DateUtils.convertLocalDateTimeToTimestamp;
+import static com.fanhab.portal.utils.DateUtils.convertTimestampToLong;
 
 @Component
 public class BillingMapper {
@@ -22,12 +23,14 @@ public class BillingMapper {
 //                .map(billingDetailMapper::mapEntityToDto)
 //                .collect(Collectors.toList());
         return new BillingDto(
+                billing.getId(),
                 billing.getCompanyId(),
                 billing.getContractId(),
                 billing.getCompany().getCompanyName(),
+                billing.getCompany().getCompanyPersianName(),
                 billing.getContract().getContractNumber(),
-                convertLocalDateTimeToTimestamp(billing.getContract().getStartDate()),
-                convertLocalDateTimeToTimestamp(billing.getContract().getEndDate()),
+                convertTimestampToLong(convertLocalDateTimeToTimestamp(billing.getContract().getStartDate())),
+                convertTimestampToLong(convertLocalDateTimeToTimestamp(billing.getContract().getEndDate())),
                 billing.getDiscount(),
                 billing.getBillStatus().name(),
                 billing.getTotalAmount().longValue(),
@@ -43,5 +46,16 @@ public class BillingMapper {
                 "debit  account " + billing.getId().toString()
         );
         return debitDto;
+    }
+    public BillingDto mapBillingEntityToDto(Billing billing){
+        BillingDto billingDto = new BillingDto();
+        billingDto.setCompanyId(billing.getCompanyId());
+        billingDto.setContractId(billing.getContractId());
+        billingDto.setBillingId(billing.getId());
+        billingDto.setCompanyName(billing.getCompany().getCompanyName());
+        billingDto.setCompanyPersianName(billing.getCompany().getCompanyPersianName());
+        billingDto.setBillStatus(billing.getBillStatus().name());
+        billingDto.setContractNo(billing.getContract().getContractNumber());
+        return billingDto;
     }
 }

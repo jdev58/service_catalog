@@ -64,14 +64,14 @@ public class BillingService {
     private LedgerDebitService ledgerDebitService;
 
     public List<BillingDto> createBillingAndDetailsForNotCalculatedApiCalls(CreateBillingDto createBillingDto, GenerateTypeEnum generateTypeEnum) {
-        createBillingDto.setFromDate(convertTimestampToLocalDate(convertTimestampToLong(createBillingDto.getStartDate())));
-        createBillingDto.setToDate(convertTimestampToLocalDate(convertTimestampToLong(createBillingDto.getEndDate())));
+        createBillingDto.setFromDate(convertTimestampToLocalDate(createBillingDto.getStartDate()));
+        createBillingDto.setToDate(convertTimestampToLocalDate(createBillingDto.getEndDate()));
         if (generateTypeEnum == GenerateTypeEnum.SYSTEM &&
                 Stream.of(createBillingDto.getCompanyId(), createBillingDto.getContractId()).anyMatch(Objects::nonNull)) {
             throw ServiceException.badRequestException("For auto-generate, contract and company should be null.");
         }
         validateDates(createBillingDto.getFromDate(),createBillingDto.getToDate());
-        checkbillingWithinTimeRange(createBillingDto.getFromDate(),createBillingDto.getToDate());
+        checkbillingWithinTimeRange(null,createBillingDto.getFromDate(),createBillingDto.getToDate(),null);
         totalApiCallService.createTotalapiCall(createBillingDto);
         int pageIndex = 0;
         int pageSize = 1000;
@@ -210,10 +210,10 @@ public class BillingService {
 
 
     }
-    private void checkbillingWithinTimeRange(LocalDate startDate, LocalDate endDate) {
-        List<Billing> billings = billingRepository.findbillingWithinTimeRange(startDate,endDate);
+    private void checkbillingWithinTimeRange(Long contractId,LocalDate startDate, LocalDate endDate,BillStatusEnum billStatusEnum) {
+        List<Billing> billings = billingRepository.findBillingWithinTimeRange(contractId,startDate,endDate,billStatusEnum);
         if (!billings.isEmpty()) {
-            StringBuilder message = new StringBuilder("قبض‌ها با شماره قراراد‌های زیر در بازه زمانی موردنظر ایجاد شده‌اند: ");
+            StringBuilder message = new StringBuilder("صورت وضعیت حساب ها با شماره قرارداد زیر در بازه زمانی موردنظر ایجاد و تایید شده‌اند: ");
 
             billings.forEach(billing ->
                     message.append("\nContract ID: ").append(billing.getContract().getContractNumber())
@@ -225,29 +225,35 @@ public class BillingService {
         }
     }
 
-    public void setVerifiedBilling(List<Long> billingId){
-        billingId.forEach(id -> updateBillingStatus(id,BillStatusEnum.VERIFIED));
-    }
 
-    public List<DebitResponseDto> verifiedBilling(VerfiyBillingDto verfiyBillingDto){
-        setVerifiedBilling(verfiyBillingDto.getBillingId());
-        List<Billing> billings = billingRepository.findByBillStatus(BillStatusEnum.VERIFIED);
-        List<DebitResponseDto> debitResponseDtos = new ArrayList<>();
-        for(Billing billing : billings){
-            DebitDto debitDto = billingMapper.mapEntityToDebitDto(billing);
-            DebitResponseDto responseDto = ledgerDebitService.sendToDebit(debitDto);
-            if (responseDto != null){
-                updateBillingStatus(billing.getId(),BillStatusEnum.PAID);
-            }
-            debitResponseDtos.add(responseDto);
+
+    public DebitResponseDto paidBlling(VerfiyBillingDto verfiyBillingDto){
+        Billing billing = billingRepository.findByIdAndBillStatus(verfiyBillingDto.getBillingId(),BillStatusEnum.VERIFIED);
+        if(billing == null)
+            throw ServiceException.notFoundException("Veified Billing not found for ID: " + verfiyBillingDto.getBillingId(),HttpStatus.NOT_FOUND);
+        DebitDto debitDto = billingMapper.mapEntityToDebitDto(billing);
+        DebitResponseDto responseDto = ledgerDebitService.sendToDebit(debitDto);
+        if (responseDto != null){
+            updateBillingStatus(billing.getId(),BillStatusEnum.PAID);
         }
-        return debitResponseDtos;
+        return responseDto;
+    }
+    public BillingDto verifiedBilling(VerfiyBillingDto verfiyBillingDto){
+        Long id = verfiyBillingDto.getBillingId();
+        Billing billing = billingRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Billing not found for ID: " + id));
+        return billingMapper.mapBillingEntityToDto(updateBillingStatus(id,BillStatusEnum.VERIFIED));
     }
     @Transactional
-    public void updateBillingStatus(Long id, BillStatusEnum newStatus) {
+    public Billing updateBillingStatus(Long id, BillStatusEnum newStatus) {
         Billing billing = billingRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Billing not found for ID: " + id));
         billing.setBillStatus(newStatus);
-        billingRepository.save(billing);
+        Billing savedBilling = billingRepository.save(billing);
+        return savedBilling;
+    }
+    public void softDeleteBilling(Long id) {
+        billingRepository.softDeleteById(id);
+        billingDetailRepository.softDeleteByBillingId(id);
     }
 }

@@ -11,5 +11,5 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class VerfiyBillingDto {
-    private List<Long> billingId;
+    private Long billingId;
 }

@@ -12,12 +12,14 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BillingDto {
+    private Long billingId;
     private Long companyId;
     private Long contractId;
     private String companyName;
+    private String companyPersianName;
     private String contractNo;
-    private Timestamp contractStartDate;
-    private Timestamp contractEndDate;
+    private Long contractStartDate;
+    private Long contractEndDate;
     private Long Discount;
     private String BillStatus;
     private Long totalAmount;
