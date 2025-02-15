@@ -28,11 +28,11 @@ public interface TotalApiCallRepository extends JpaRepository<TotalApiCall, Long
             "INNER join ContractDetailAPI cda on cda.contractId = tac.contractId and cda.apiId = tac.apiId and cda.apiStatus = tac.apiStatus " +
             "inner join Contract  c on c.id = cda.contractId "+
             "WHERE tac.processState = 'NOT_CALCULATED' " +
-            "AND (:contractId IS NULL OR tac.contractId = :contractId) " +
+            "AND (:companyId IS NULL OR c.companyId = :companyId) " +
             "AND tac.fromDate >= :startDate and tac.toDate <= :endDate " +
             "ORDER BY tac.contractId ASC")
     Page<TotalCallApiDto> findNotCalculatedTotalApiCalls(
-            @Param("contractId") Long contractId,
+            @Param("companyId") Long companyId,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate,
             Pageable pageable);

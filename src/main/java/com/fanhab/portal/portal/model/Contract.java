@@ -37,10 +37,10 @@ public class Contract extends BaseDomain {
     @Column(name = "CONTRACT_NUMBER",nullable = false)
     private String contractNumber;
 
-    @Column(name = "START_DATE",nullable = false)
+    @Column(name = "START_DATE")
     private LocalDateTime startDate;
 
-    @Column(name = "END_DATE",nullable = false)
+    @Column(name = "END_DATE")
     private LocalDateTime endDate;
 
 }

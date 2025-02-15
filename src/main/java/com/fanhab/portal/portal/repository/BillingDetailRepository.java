@@ -10,11 +10,15 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * {@link Message} repository.
  */
 @Repository
 public interface BillingDetailRepository extends JpaRepository<BillingDetail, Long>, JpaSpecificationExecutor<BillingDetail> {
+
+    List<BillingDetail> findByBillingId(Long billingId);
 
     @Modifying
     @Transactional

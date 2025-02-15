@@ -45,4 +45,6 @@ public interface BillingRepository extends JpaRepository<Billing, Long>, JpaSpec
     @Query("UPDATE Billing b SET b.isDeleted = true WHERE b.id = :id")
     void softDeleteById(@Param("id") Long id);
 
+    List<Billing> findAllByCompanyId(Long companyId);
+
 }

@@ -50,4 +50,10 @@ public class BillingDetail extends BaseDomain {
     @Column(name = "API_RESPONSE_CODE")
     @Enumerated(EnumType.STRING)
     ApiStatusEnum apiResponseCode;
+
+    @Column(name = "TOTAL_API_COUNT")
+    Integer totalApiCallCount;
+
+    @Column(name = "per_call_price")
+    Integer price;
 }

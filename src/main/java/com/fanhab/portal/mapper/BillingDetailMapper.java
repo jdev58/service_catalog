@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class BillingDetailMapper {
-    public BillingDetailDto mapEntityToDto(BillingDetail billingDetail, Integer totalApiCall,Integer perPrice){
+    public BillingDetailDto mapEntityToDto(BillingDetail billingDetail){
         BillingDetailDto billingDetailDto = new BillingDetailDto(
                 billingDetail.getId(),
                 billingDetail.getApiId(),
@@ -14,9 +14,9 @@ public class BillingDetailMapper {
                 billingDetail.getApi().getApiPersianName(),
                 billingDetail.getApi().getApiCode(),
                 billingDetail.getApiResponseCode().name(),
-                totalApiCall,
+                billingDetail.getTotalApiCallCount(),
                 billingDetail.getApiTotalAmount().longValue(),
-                perPrice
+                billingDetail.getPrice()
         );
         return  billingDetailDto;
     }

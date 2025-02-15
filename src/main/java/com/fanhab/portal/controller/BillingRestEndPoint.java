@@ -46,6 +46,16 @@ public class BillingRestEndPoint {
         DebitResponseDto debitResponseDtos = billingService.paidBlling(verfiyBillingDto);
         return new ResponseEntity<>(debitResponseDtos,HttpStatus.OK);
     }
+    @GetMapping("/GetAllCompanyBilling")
+    public ResponseEntity<List<BillingDto>> getAllBilling(@RequestParam(name = "companyId", required = true) Long companyId){
+        List<BillingDto> billingDtoList = billingService.getAllBillingByCompanyId(companyId);
+        return new ResponseEntity<>(billingDtoList,HttpStatus.OK);
+    }
+    @GetMapping("/GetBillingDetail")
+    public ResponseEntity<BillingDto> getBillingDetail(@RequestParam(name = "billingId", required = true) Long billingId){
+        BillingDto billingDtoList = billingService.getBillingDetail(billingId);
+        return new ResponseEntity<>(billingDtoList,HttpStatus.OK);
+    }
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> softDeleteBilling(@PathVariable Long id) {
         billingService.softDeleteBilling(id);

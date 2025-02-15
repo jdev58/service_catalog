@@ -2,10 +2,13 @@ package com.fanhab.portal.service;
 
 import com.fanhab.portal.dto.enums.StatusEnum;
 import com.fanhab.portal.dto.response.ApiDto;
+import com.fanhab.portal.dto.response.CompanyDto;
 import com.fanhab.portal.dto.response.ContractInfoDto;
 import com.fanhab.portal.dto.response.PricePerStatus;
+import com.fanhab.portal.mapper.CompanyMapper;
 import com.fanhab.portal.mapper.ContractInfoMapper;
 import com.fanhab.portal.portal.model.Contract;
+import com.fanhab.portal.portal.repository.CompanyRepository;
 import com.fanhab.portal.portal.repository.ContractApiRepository;
 import com.fanhab.portal.portal.repository.ContractDetailApiRepository;
 import com.fanhab.portal.portal.repository.ContractRepository;
@@ -25,6 +28,10 @@ public class ContractInfoService {
     private ContractApiRepository contractApiRepository;
     @Autowired
     private ContractDetailApiRepository contractDetailApiRepository;
+    @Autowired
+    private CompanyRepository companyRepository;
+    @Autowired
+    private CompanyMapper companyMapper ;
 
     public List<ContractInfoDto> getContractInfo(){
         List<Contract> contracts = contractRepository.findByContractStatus(StatusEnum.ACTIVE);
@@ -45,5 +52,9 @@ public class ContractInfoService {
             return contractInfoMapper.contractEntityToDto(contract,apiDtoList);
         }).collect(Collectors.toList());
         return contractInfoDtoList;
+    }
+
+    public List<CompanyDto> getAllCompanyInfo(){
+        return companyRepository.findAll().stream().map(companyMapper::mapEntityToDto).collect(Collectors.toList());
     }
 }

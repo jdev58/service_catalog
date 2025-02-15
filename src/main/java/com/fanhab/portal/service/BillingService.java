@@ -95,7 +95,7 @@ public class BillingService {
     private Page<TotalCallApiDto> fetchPagedTotalApiCall(CreateBillingDto createBillingDto, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return totalApiCallRepository.findNotCalculatedTotalApiCalls(
-                createBillingDto.getContractId(),
+                createBillingDto.getCompanyId(),
                 createBillingDto.getFromDate().atStartOfDay(),
                 createBillingDto.getToDate().atTime(23, 59, 59),
                 pageable
@@ -155,11 +155,13 @@ public class BillingService {
                 billingDetail.setApi(apiCatalogRepository.findById(totalCallApiDto.getApiId()).get());
                 billingDetail.setApiResponseCode(totalCallApiDto.getApiStatus());
                 billingDetail.setApiTotalAmount(totalCallApiDto.getTotalAmount());
+                billingDetail.setTotalApiCallCount(totalCallApiDto.getTotalApiCount());
+                billingDetail.setPrice(totalCallApiDto.getPerPrice());
 
 
 
                 BillingDetailDto billingDetailDto = billingDetailMapper.mapEntityToDto(
-                        billingDetailRepository.save(billingDetail),totalCallApiDto.getTotalApiCount(), totalCallApiDto.getPerPrice());
+                        billingDetailRepository.save(billingDetail));
                 billingDetailDtos.add(billingDetailDto);
             }
             BillingDto billingDto = billingMapper.mapEntityToDto(billing, billingDetailDtos);
@@ -210,6 +212,17 @@ public class BillingService {
 
 
     }
+    public BillingDto getBillingDetail(Long id) {
+        Billing billing = billingRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Billing not found for ID: " + id));
+        List<BillingDetailDto> billingDetailDtos = billingDetailRepository.findByBillingId(billing.getId()).stream().map(billingDetailMapper::mapEntityToDto).collect(Collectors.toList());
+        return billingMapper.mapEntityToDto(billing, billingDetailDtos);
+    }
+    public List<BillingDto> getAllBillingByCompanyId(Long companyId) {
+        List<Billing> billingList = billingRepository.findAllByCompanyId(companyId);
+        List<BillingDto> billingDtos = billingList.stream().map(billingMapper::mapBillingEntityToDto).collect(Collectors.toList());
+        return billingDtos;
+    }
     private void checkbillingWithinTimeRange(Long contractId,LocalDate startDate, LocalDate endDate,BillStatusEnum billStatusEnum) {
         List<Billing> billings = billingRepository.findBillingWithinTimeRange(contractId,startDate,endDate,billStatusEnum);
         if (!billings.isEmpty()) {
@@ -240,9 +253,10 @@ public class BillingService {
     }
     public BillingDto verifiedBilling(VerfiyBillingDto verfiyBillingDto){
         Long id = verfiyBillingDto.getBillingId();
-        Billing billing = billingRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Billing not found for ID: " + id));
-        return billingMapper.mapBillingEntityToDto(updateBillingStatus(id,BillStatusEnum.VERIFIED));
+        Billing billing = billingRepository.findByIdAndBillStatus(id,BillStatusEnum.READY);
+        if(billing == null)
+            throw ServiceException.notFoundException("Ready Billing not found for ID: " + verfiyBillingDto.getBillingId(),HttpStatus.NOT_FOUND);
+        return billingMapper.mapBillingEntityToDto(updateBillingStatus(billing.getId(),BillStatusEnum.VERIFIED));
     }
     @Transactional
     public Billing updateBillingStatus(Long id, BillStatusEnum newStatus) {

@@ -56,6 +56,9 @@ public class BillingMapper {
         billingDto.setCompanyPersianName(billing.getCompany().getCompanyPersianName());
         billingDto.setBillStatus(billing.getBillStatus().name());
         billingDto.setContractNo(billing.getContract().getContractNumber());
+        billingDto.setTotalAmount(billing.getTotalAmount().longValue());
+        billingDto.setContractStartDate(convertTimestampToLong(convertLocalDateTimeToTimestamp(billing.getContract().getStartDate())));
+        billingDto.setContractEndDate(convertTimestampToLong(convertLocalDateTimeToTimestamp(billing.getContract().getEndDate())));
         return billingDto;
     }
 }
