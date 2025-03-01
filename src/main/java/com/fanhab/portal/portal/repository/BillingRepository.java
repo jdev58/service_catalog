@@ -4,6 +4,8 @@ package com.fanhab.portal.portal.repository;
 import com.fanhab.portal.dto.enums.BillStatusEnum;
 import com.fanhab.portal.portal.model.Billing;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -46,5 +48,17 @@ public interface BillingRepository extends JpaRepository<Billing, Long>, JpaSpec
     void softDeleteById(@Param("id") Long id);
 
     List<Billing> findAllByCompanyId(Long companyId);
+
+    @Query("SELECT t FROM Billing t WHERE " +
+            "(:companyId IS NULL OR t.companyId = :companyId) AND " +
+            "(COALESCE(:startDate, t.fromDate) <= t.fromDate) AND " +
+            "(COALESCE(:endDate, t.toDate) >= t.toDate) AND " +
+            "t.isDeleted <> true AND " +
+            "(:billStatus IS NULL OR t.billStatus = :billStatus)")
+    Page<Billing> findBillingByCompanyId(@Param("companyId") Long companyId,
+                                         @Param("startDate") LocalDate startDate,
+                                         @Param("endDate") LocalDate endDate,
+                                         @Param("billStatus") BillStatusEnum billStatus,
+                                         Pageable pageable);
 
 }

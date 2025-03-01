@@ -6,7 +6,7 @@ import com.fanhab.portal.dto.enums.GenerateTypeEnum;
 import com.fanhab.portal.dto.enums.ProcessStatusEnum;
 import com.fanhab.portal.dto.request.CreateBillingDto;
 import com.fanhab.portal.dto.request.DebitDto;
-import com.fanhab.portal.dto.request.VerfiyBillingDto;
+import com.fanhab.portal.dto.request.StatusBillingDto;
 import com.fanhab.portal.dto.response.BillingDetailDto;
 import com.fanhab.portal.dto.response.BillingDto;
 import com.fanhab.portal.dto.response.DebitResponseDto;
@@ -16,7 +16,6 @@ import com.fanhab.portal.mapper.BillingDetailMapper;
 import com.fanhab.portal.mapper.BillingMapper;
 import com.fanhab.portal.portal.model.Billing;
 import com.fanhab.portal.portal.model.BillingDetail;
-import com.fanhab.portal.portal.model.Contract;
 import com.fanhab.portal.portal.model.TotalApiCall;
 import com.fanhab.portal.portal.repository.*;
 import com.fanhab.portal.service.proxy.ledger.LedgerDebitService;
@@ -24,19 +23,18 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.fanhab.portal.utils.DateUtils.convertTimestampToLocalDate;
-import static com.fanhab.portal.utils.DateUtils.convertTimestampToLong;
+
 
 @Service
 public class BillingService {
@@ -218,11 +216,23 @@ public class BillingService {
         List<BillingDetailDto> billingDetailDtos = billingDetailRepository.findByBillingId(billing.getId()).stream().map(billingDetailMapper::mapEntityToDto).collect(Collectors.toList());
         return billingMapper.mapEntityToDto(billing, billingDetailDtos);
     }
-    public List<BillingDto> getAllBillingByCompanyId(Long companyId) {
-        List<Billing> billingList = billingRepository.findAllByCompanyId(companyId);
-        List<BillingDto> billingDtos = billingList.stream().map(billingMapper::mapBillingEntityToDto).collect(Collectors.toList());
-        return billingDtos;
+
+    public Page<BillingDto> getAllBillingByCompanyId(Long companyId, Long startDate, Long endDate, BillStatusEnum billStatus, Integer pageIndex, Integer pageSize) {
+        var fromDate = startDate != null ? convertTimestampToLocalDate(startDate) : null;
+        var toDate = endDate != null ? convertTimestampToLocalDate(endDate) : null;
+        Pageable pageable = PageRequest.of(pageIndex, pageSize);
+        Page<Billing> billingList = billingRepository.findBillingByCompanyId(companyId,
+                fromDate,
+                toDate,
+                billStatus , pageable);
+
+        List<BillingDto> billingDtos = billingList.getContent()
+                .stream()
+                .map(billingMapper::mapBillingEntityToDto)
+                .collect(Collectors.toList());
+        return new PageImpl<>(billingDtos, pageable, billingList.getTotalElements());
     }
+
     private void checkbillingWithinTimeRange(Long contractId,LocalDate startDate, LocalDate endDate,BillStatusEnum billStatusEnum) {
         List<Billing> billings = billingRepository.findBillingWithinTimeRange(contractId,startDate,endDate,billStatusEnum);
         if (!billings.isEmpty()) {
@@ -240,10 +250,10 @@ public class BillingService {
 
 
 
-    public DebitResponseDto paidBlling(VerfiyBillingDto verfiyBillingDto){
-        Billing billing = billingRepository.findByIdAndBillStatus(verfiyBillingDto.getBillingId(),BillStatusEnum.VERIFIED);
+    public DebitResponseDto paidBlling(StatusBillingDto statusBillingDto){
+        Billing billing = billingRepository.findByIdAndBillStatus(statusBillingDto.getBillingId(),BillStatusEnum.VERIFIED);
         if(billing == null)
-            throw ServiceException.notFoundException("Veified Billing not found for ID: " + verfiyBillingDto.getBillingId(),HttpStatus.NOT_FOUND);
+            throw ServiceException.notFoundException("Veified Billing not found for ID: " + statusBillingDto.getBillingId(),HttpStatus.NOT_FOUND);
         DebitDto debitDto = billingMapper.mapEntityToDebitDto(billing);
         DebitResponseDto responseDto = ledgerDebitService.sendToDebit(debitDto);
         if (responseDto != null){
@@ -251,12 +261,30 @@ public class BillingService {
         }
         return responseDto;
     }
-    public BillingDto verifiedBilling(VerfiyBillingDto verfiyBillingDto){
-        Long id = verfiyBillingDto.getBillingId();
+    public BillingDto verifiedBilling(StatusBillingDto statusBillingDto){
+        Long id = statusBillingDto.getBillingId();
         Billing billing = billingRepository.findByIdAndBillStatus(id,BillStatusEnum.READY);
         if(billing == null)
-            throw ServiceException.notFoundException("Ready Billing not found for ID: " + verfiyBillingDto.getBillingId(),HttpStatus.NOT_FOUND);
+            throw ServiceException.notFoundException("Ready Billing not found for ID: " + statusBillingDto.getBillingId(),HttpStatus.NOT_FOUND);
         return billingMapper.mapBillingEntityToDto(updateBillingStatus(billing.getId(),BillStatusEnum.VERIFIED));
+    }
+    @Transactional
+    public BillingDto rejectedBilling(StatusBillingDto statusBillingDto){
+        Long id = statusBillingDto.getBillingId();
+        Billing billing = billingRepository.findByIdAndBillStatus(id,BillStatusEnum.READY);
+        if(billing == null)
+            throw ServiceException.notFoundException("Ready Billing not found for ID: " + statusBillingDto.getBillingId(),HttpStatus.NOT_FOUND);
+        List<TotalApiCall> totalApiCall = totalApiCallRepository.findCalculateTotalApiCall(
+                billing.getContractId(),
+                billing.getFromDate().atStartOfDay(),
+                billing.getToDate().atTime(23, 59, 59));
+        totalApiCall.forEach(t -> changeTotalApiCallStatus(t, ProcessStatusEnum.NOT_CALCULATED));
+        return billingMapper.mapBillingEntityToDto(updateBillingStatus(billing.getId(),BillStatusEnum.REJECTED));
+    }
+
+    private TotalApiCall changeTotalApiCallStatus(TotalApiCall totalApiCall,ProcessStatusEnum processStatusEnum){
+        totalApiCall.setProcessState(processStatusEnum);
+        return totalApiCallRepository.save(totalApiCall);
     }
     @Transactional
     public Billing updateBillingStatus(Long id, BillStatusEnum newStatus) {

@@ -10,6 +10,6 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class VerfiyBillingDto {
+public class StatusBillingDto {
     private Long billingId;
 }

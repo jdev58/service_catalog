@@ -1,5 +1,5 @@
 package com.fanhab.portal.dto.enums;
 
 public enum BillStatusEnum {
-    READY, PAID, VERIFIED
+    READY, PAID, VERIFIED, REJECTED
 }
