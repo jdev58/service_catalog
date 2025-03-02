@@ -37,8 +37,8 @@ public interface TotalApiCallRepository extends JpaRepository<TotalApiCall, Long
             @Param("endDate") LocalDateTime endDate,
             Pageable pageable);
 
-    @Query("SELECT COUNT(t) FROM TotalApiCall t WHERE t.fromDate BETWEEN :start AND :end AND t.isDeleted <> true ")
-    long countTotalApiCallsWithinTimeRange(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+    @Query("SELECT t FROM TotalApiCall t WHERE t.fromDate >= :start AND t.toDate <= :end AND t.isDeleted <> true ")
+    List<TotalApiCall> findExistingTotalApiCall(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
     @Query("SELECT MAX(t.toDate) FROM TotalApiCall t WHERE t.isDeleted != true ")
     LocalDateTime findMaxToDate();

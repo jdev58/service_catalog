@@ -7,11 +7,9 @@ import com.fanhab.portal.dto.response.ContractInfoDto;
 import com.fanhab.portal.dto.response.PricePerStatus;
 import com.fanhab.portal.mapper.CompanyMapper;
 import com.fanhab.portal.mapper.ContractInfoMapper;
+import com.fanhab.portal.portal.model.Api;
 import com.fanhab.portal.portal.model.Contract;
-import com.fanhab.portal.portal.repository.CompanyRepository;
-import com.fanhab.portal.portal.repository.ContractApiRepository;
-import com.fanhab.portal.portal.repository.ContractDetailApiRepository;
-import com.fanhab.portal.portal.repository.ContractRepository;
+import com.fanhab.portal.portal.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +30,7 @@ public class ContractInfoService {
     private CompanyRepository companyRepository;
     @Autowired
     private CompanyMapper companyMapper ;
+    private ApiCatalogRepository apiCatalogRepository;
 
     public List<ContractInfoDto> getContractInfo(){
         List<Contract> contracts = contractRepository.findByContractStatus(StatusEnum.ACTIVE);
@@ -57,4 +56,8 @@ public class ContractInfoService {
     public List<CompanyDto> getAllCompanyInfo(){
         return companyRepository.findAll().stream().map(companyMapper::mapEntityToDto).collect(Collectors.toList());
     }
+
+//    public List<CompanyDto>  getAllCompany(){
+//        return apiCatalogRepository.findAll().stream().map()
+//    }
 }

@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -35,6 +36,13 @@ public class BillingRestEndPoint {
         List<BillingDto> billingDtoList = billingService.createBillingAndDetailsForNotCalculatedApiCalls(createBillingDto,GenerateTypeEnum.MANUAL);
         return new ResponseEntity<>(billingDtoList,HttpStatus.CREATED);
     }
+
+    @GetMapping("/ShowBilling")
+    public ResponseEntity<List<BillingDto>> showBilling(@RequestBody CreateBillingDto createBillingDto){
+        List<BillingDto> billingDtoList = billingService.showBillingAndDetail(createBillingDto);
+        return new ResponseEntity<>(billingDtoList,HttpStatus.OK);
+    }
+
 
     @PostMapping("/VerifyBilling")
     public ResponseEntity<BillingDto> verifyBilling(@RequestBody VerfiyBillingDto verfiyBillingDto){

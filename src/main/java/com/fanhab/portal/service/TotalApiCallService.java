@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,28 +46,17 @@ public class TotalApiCallService {
     private ContractDetailApiRepository contractDetailApiRepository;
 
     public void createTotalapiCall(CreateBillingDto createBillingDto){
-
         LocalDateTime startDate = createBillingDto.getFromDate().atStartOfDay();
         LocalDateTime endDate = createBillingDto.getToDate().atTime(23, 59, 59);
-        if (hasTotalApiCallsWithinTimeRange(endDate)){
-            LocalDateTime totalCallEndDate = totalApiCallRepository.findMaxToDate();
-            if (totalCallEndDate != null && totalCallEndDate.isAfter(startDate)) {
-                startDate = totalCallEndDate.plusDays(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
-            }
-            Long startDateL = createBillingDto.getStartDate()*1000;
-            Long endDateL =(createBillingDto.getEndDate()*1000 )+ 999;
+        List<TotalApiCall> exsistingTotalApiCall = totalApiCallRepository.findExistingTotalApiCall(startDate, endDate);
+        List<LocalDate> allDays = createBillingDto.getFromDate().datesUntil(createBillingDto.getToDate().plusDays(1)).collect(Collectors.toList());
+        List<LocalDate> missingDays = allDays.stream()
+                .filter(day -> exsistingTotalApiCall.stream().noneMatch(log -> log.getFromDate().equals(day.atStartOfDay())
+                && log.getToDate().equals(day.atTime(23, 59, 59))))
+                .collect(Collectors.toList());
+        for(LocalDate day : missingDays){
 
-            //List<ApiRequestDto> apiRequestDtos = apiRequestRepository.findApiRequestsGrouped(startDateL, endDateL);
-            List<Object[]> results = apiRequestRepository.findApiRequestsGrouped(startDateL, endDateL);
-            List<ApiRequestDto> apiRequestDtos = results.stream()
-                    .map(totalApiCallMapper::mapObjectApiRequestDto)
-                    .collect(Collectors.toList());
-            //List<Map<String, Object>> contractDetails = getContractDetails();
-            List<ContractDetailAPI> contractDetails = getActiveContractDetails();
-
-            createTotalApiCall(apiRequestDtos, contractDetails,startDate, endDate);
         }
-
     }
 
     private void createTotalApiCall(List<ApiRequestDto> apiRequestDtos,List<ContractDetailAPI> contractDetails,LocalDateTime startDate,LocalDateTime endDate){

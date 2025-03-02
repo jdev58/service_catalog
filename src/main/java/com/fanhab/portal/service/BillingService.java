@@ -35,8 +35,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.fanhab.portal.utils.DateUtils.convertTimestampToLocalDate;
-import static com.fanhab.portal.utils.DateUtils.convertTimestampToLong;
+import static com.fanhab.portal.utils.DateUtils.*;
 
 @Service
 public class BillingService {
@@ -89,6 +88,29 @@ public class BillingService {
             setApiCallAsCalculated(totalApiCallPage.getContent());
             pageIndex++;
         }
+        return billingDtoList;
+    }
+    public List<BillingDto> showBillingAndDetail(CreateBillingDto createBillingDto){
+        createBillingDto.setFromDate(convertTimestampToLocalDate(createBillingDto.getStartDate()));
+        createBillingDto.setToDate(convertTimestampToLocalDate(createBillingDto.getEndDate()));
+        validateDates(createBillingDto.getFromDate(),createBillingDto.getToDate());
+        totalApiCallService.createTotalapiCall(createBillingDto);
+        int pageIndex = 0;
+        int pageSize = 1000;
+        List<BillingDto> billingDtoList = new ArrayList<>();
+        while (true){
+            Page<TotalCallApiDto> totalApiCallPage = fetchPagedTotalApiCall(createBillingDto, pageIndex, pageSize);
+            if(pageIndex == 0 && totalApiCallPage.isEmpty() ){
+                throw ServiceException.notFoundException("there are no not-calculated data in totalApiCall table",HttpStatus.NOT_FOUND);
+            }
+            if (totalApiCallPage.isEmpty()) {
+                break;
+            }
+            Map<Long, List<TotalCallApiDto>> apiCallGroupedByContractId = groupedByContractId(totalApiCallPage.getContent());
+            billingDtoList = createBillingAndBillingDetail(apiCallGroupedByContractId,createBillingDto);
+            pageIndex++;
+        }
+
         return billingDtoList;
     }
 
@@ -169,6 +191,51 @@ public class BillingService {
         }
         return billingDtoList;
     }
+    private List<BillingDto> showBillingAndBillingDetail(Map<Long, List<TotalCallApiDto>> groupedApiCall,CreateBillingDto createBillingDto){
+        List<BillingDto> billingDtoList = new ArrayList<>();
+        for (Map.Entry<Long, List<TotalCallApiDto>> entry : groupedApiCall.entrySet()) {
+            Long contractId = entry.getKey();
+            List<TotalCallApiDto> apiDtos = entry.getValue();
+
+            Double totalAmount = apiDtos.stream()
+                    .mapToDouble(TotalCallApiDto::getTotalAmount)
+                    .sum();
+            Long companyId = apiDtos.stream().map(TotalCallApiDto::getCompanyId).findFirst().get();
+
+            Billing billing = new Billing();
+            billing.setCompanyId(companyId);
+            billing.setCompany(companyRepository.findById(companyId).get());
+            billing.setContractId(contractId);
+            billing.setContract(contractRepository.findById(contractId).get());
+            billing.setTotalAmount(totalAmount);
+            billing.setFromDate(createBillingDto.getFromDate());
+            billing.setToDate(createBillingDto.getToDate());
+            billing.setBillStatus(BillStatusEnum.READY);
+
+
+
+
+            List<BillingDetailDto> billingDetailDtos = new ArrayList<>();
+            for(TotalCallApiDto totalCallApiDto:apiDtos){
+                BillingDetail billingDetail = new BillingDetail();
+                billingDetail.setBillingId(billing.getId());
+                billingDetail.setApiId(totalCallApiDto.getApiId());
+                billingDetail.setApi(apiCatalogRepository.findById(totalCallApiDto.getApiId()).get());
+                billingDetail.setApiResponseCode(totalCallApiDto.getApiStatus());
+                billingDetail.setApiTotalAmount(totalCallApiDto.getTotalAmount());
+                billingDetail.setTotalApiCallCount(totalCallApiDto.getTotalApiCount());
+                billingDetail.setPrice(totalCallApiDto.getPerPrice());
+
+
+
+                BillingDetailDto billingDetailDto = billingDetailMapper.mapEntityToDto(billingDetail);
+                billingDetailDtos.add(billingDetailDto);
+            }
+            BillingDto billingDto = billingMapper.mapEntityToDto(billing, billingDetailDtos);
+            billingDtoList.add(billingDto);
+        }
+        return billingDtoList;
+    }
 
     @Transactional
     private void setApiCallAsCalculated(List<TotalCallApiDto> apiDtos) {
@@ -184,34 +251,7 @@ public class BillingService {
 
         totalApiCallRepository.saveAll(updatedCalls);
     }
-    public void validateDates(LocalDate startDate,LocalDate endDate) {
 
-
-        if(startDate == null || endDate == null){
-            throw ServiceException.badRequestException("تاریخ شروع و پایان نمیتواند خالی باشد");
-        }
-
-
-
-        if (startDate.isAfter(endDate)) {
-            throw ServiceException.badRequestException("تاریخ شروع نمی‌تواند بزرگتر از تاریخ پایان باشد.");
-        }
-
-
-        if (startDate.isAfter(LocalDate.now()) || endDate.isAfter(LocalDate.now()) || startDate.isEqual(LocalDate.now())  || endDate.isEqual(LocalDate.now())) {
-            throw  ServiceException.badRequestException("تاریخ شروع و پایان نمیتوانند بزرگتر یا برابر تاریخ امروز باشند.");
-        }
-
-
-
-        int daysBetween = (int) (endDate.toEpochDay() - startDate.toEpochDay());
-
-        if (daysBetween > 31) {
-            throw ServiceException.badRequestException("فاصله زمانی بین تاریخ‌ها نمی‌تواند بیش از 31 روز باشد.");
-        }
-
-
-    }
     public BillingDto getBillingDetail(Long id) {
         Billing billing = billingRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Billing not found for ID: " + id));
