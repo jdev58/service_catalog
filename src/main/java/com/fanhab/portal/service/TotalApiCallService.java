@@ -156,7 +156,7 @@ public class TotalApiCallService {
         totalApiCallRepository.saveAll(totalApiCalls);
     }
 
-    private ApiStatusEnum getApiStatusByResponseCode(Integer responseCode) {
+    public ApiStatusEnum getApiStatusByResponseCode(Integer responseCode) {
         if (responseCode == 200) {
             return ApiStatusEnum.STATE_200;
         }

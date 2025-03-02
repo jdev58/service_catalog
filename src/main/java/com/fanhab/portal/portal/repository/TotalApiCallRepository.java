@@ -36,6 +36,12 @@ public interface TotalApiCallRepository extends JpaRepository<TotalApiCall, Long
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate,
             Pageable pageable);
+    @Query("select t from TotalApiCall t where t.contractId = :contractId " +
+            "and t.processState = 'CALCULATED' and t.fromDate >= :startDate and t.toDate <= :endDate")
+    List<TotalApiCall> findCalculateTotalApiCall(
+            @Param("contractId") Long contractId,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate);
 
     @Query("SELECT t FROM TotalApiCall t WHERE t.fromDate >= :start AND t.toDate <= :end AND t.isDeleted <> true ")
     List<TotalApiCall> findExistingTotalApiCall(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
